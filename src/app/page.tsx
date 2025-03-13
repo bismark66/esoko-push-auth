@@ -1,103 +1,169 @@
-import Image from "next/image";
+'use client'
+import React, { useState } from 'react';
+import { Col, Row, message } from 'antd';
+import SignIn from '@/components/SignIn';
+import SignUp from '@/components/SignUp';
+import type { FormProps } from 'antd';
+import { useRouter } from 'next/navigation';
+
+type SignInFieldType = {
+  email?: string;
+  password?: string;
+};
+
+type SignUpFieldType = {
+  firstName?: string;
+  lastName?: string;
+  phoneNumber?: string;
+  email?: string;
+  country?: string;
+  password?: string;
+  confirmPassword?: string;
+};
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [isSignIn, setIsSignIn] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+  const onSignInFinish: FormProps<SignInFieldType>['onFinish'] = async (values) => {
+    try {
+      setLoading(true);
+      
+      const response = await fetch('/api/auth/signin', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(values),
+      });
+
+      if (!response.ok) {
+        throw new Error('Invalid credentials');
+      }
+
+      const data = await response.json();
+      
+      
+      localStorage.setItem('auth_token', data.token);
+      
+      message.success('Successfully signed in!');
+      
+      // Redirect to your web app
+      router.push('/dashboard'); 
+    } catch (error) {
+      message.error('Failed to sign in. Please check your credentials.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const onSignUpFinish: FormProps<SignUpFieldType>['onFinish'] = async (values) => {
+    try {
+      setLoading(true);
+      // TODO: Replace with your actual API endpoint
+      const response = await fetch('/api/auth/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(values),
+      });
+
+      if (!response.ok) {
+        throw new Error('Registration failed');
+      }
+
+      const data = await response.json();
+      
+      localStorage.setItem('auth_token', data.token);
+      
+      message.success('Account created successfully!');
+      
+      // Redirect to your web app
+      router.push('/dashboard'); // Replace with your app's dashboard URL
+    } catch (error) {
+      message.error('Failed to create account. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const onFinishFailed = (errorInfo: any) => {
+    console.log('Failed:', errorInfo);
+    message.error('Please check your input and try again.');
+  };
+
+  
+  React.useEffect(() => {
+    const token = localStorage.getItem('auth_token');
+    if (token) {
+      router.push('/dashboard'); 
+    }
+  }, [router]);
+
+  return (
+    <Row justify="center" align="middle" style={{ minHeight: '100vh', background: '#fff' }}>
+      <Col 
+        xs={0} 
+        sm={0} 
+        md={14} 
+        style={{
+          backgroundColor: '#0d3b77', 
+          height: '100vh',
+          clipPath: "polygon(0 0, 80% 0%, 100% 100%, 0% 100%)",
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}
+      >
+        <Row justify="center" align="middle" style={{ height: '100%'}}>
+          <Col span={12}>
+            <img src="/esoko_push.png" alt="logo" style={{ maxWidth: '100%' }} />
+          </Col>
+
+          <Col span={24} style={{textAlign: 'center',color: 'white'}} >
+          <Row justify="center" align="middle">
+            <Col span={16}>
+            <h2 style={{fontSize: '2.0rem', marginBottom: '1rem', fontWeight: 200}}>Connect with your users globally through reliable, scalable communication APIs</h2>
+            <h2 style={{fontSize: '1.0rem', lineHeight: '1.6', opacity: 0.9, fontWeight: 600}}>COMMUNITY MESSAGING PLATFORM</h2>
+            </Col>
+            </Row>
+          </Col>
+        </Row>
+      </Col>
+      <Col 
+        xs={24} 
+        sm={24} 
+        md={10} 
+        style={{ 
+          padding: '20px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          minHeight: '100vh'
+        }}
+      >
+        <Row justify="center" align="middle" style={{ width: '100%' }}>
+          <Col xs={24} sm={20} md={10} style={{textAlign: 'left'}}>
+            {isSignIn ? (
+              <SignIn 
+                onFinish={onSignInFinish}
+                onFinishFailed={onFinishFailed}
+                onSignUpClick={() => setIsSignIn(false)}
+                loading={loading}
+              />
+            ) : (
+              <SignUp 
+                onFinish={onSignUpFinish}
+                onFinishFailed={onFinishFailed}
+                onSignInClick={() => setIsSignIn(true)}
+                loading={loading}
+              />
+            )}
+          </Col>
+        </Row>
+      </Col>
+    </Row>
   );
 }
