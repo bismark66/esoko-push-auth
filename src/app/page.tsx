@@ -5,6 +5,7 @@ import SignIn from '@/components/SignIn';
 import SignUp from '@/components/SignUp';
 import type { FormProps } from 'antd';
 import { useRouter } from 'next/navigation';
+import styles from "../styles/page.module.css";
 
 type SignInFieldType = {
   email?: string;
@@ -107,15 +108,18 @@ export default function Home() {
       <Col 
         xs={0} 
         sm={0} 
-        md={14} 
-        style={{
-          backgroundColor: '#0d3b77', 
-          height: '100vh',
-          clipPath: "polygon(0 0, 80% 0%, 100% 100%, 0% 100%)",
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center'
-        }}
+        lg={14} 
+        md={10}
+         className={styles.container1}
+         
+        // style={{
+        //   backgroundColor: '#0d3b77', 
+        //   height: '100vh',
+        //   clipPath: "polygon(0 0, 80% 0%, 100% 100%, 0% 100%)",
+        //   display: 'flex',
+        //   alignItems: 'center',
+        //   justifyContent: 'center'
+        // }}
       >
         <Row justify="center" align="middle" style={{ height: '100%'}}>
           <Col span={12}>
@@ -135,7 +139,8 @@ export default function Home() {
       <Col 
         xs={24} 
         sm={24} 
-        md={10} 
+        lg={10} 
+        md={14}
         style={{ 
           padding: '20px',
           display: 'flex',
@@ -145,7 +150,7 @@ export default function Home() {
         }}
       >
         <Row justify="center" align="middle" style={{ width: '100%' }}>
-          <Col xs={24} sm={20} md={10} style={{textAlign: 'left'}}>
+          <Col xs={24} sm={20} md={14} lg={16} style={{textAlign: 'left'}}>
             {isSignIn ? (
               <SignIn 
                 onFinish={onSignInFinish}
