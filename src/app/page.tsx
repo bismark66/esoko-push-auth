@@ -111,15 +111,6 @@ export default function Home() {
         lg={14} 
         md={10}
          className={styles.container1}
-         
-        // style={{
-        //   backgroundColor: '#0d3b77', 
-        //   height: '100vh',
-        //   clipPath: "polygon(0 0, 80% 0%, 100% 100%, 0% 100%)",
-        //   display: 'flex',
-        //   alignItems: 'center',
-        //   justifyContent: 'center'
-        // }}
       >
         <Row justify="center" align="middle" style={{ height: '100%'}}>
           <Col span={12}>
